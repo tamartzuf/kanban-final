@@ -7,7 +7,32 @@
     <script src="./index.js" defer></script>
     <link rel="stylesheet" href="./styles.css" />
     <title>Tasks manager</title>
+    <head id= "page-title"></head>
 </head>
 <body>
+    <h1> KANBAN task-management </h1>
+    <section id="section-search">
+        <input id="search" placeholder="search">
+    </section>
+    <div id="task-sections-div">
+        <section id="section-to-do" class="task-section">
+            <h2 class="section-title">To Do</h2>
+            <ul class="to-do-tasks"></ul>
+            <input id="add-to-do-tasks" class="input" placeholder="Add to do">  
+            <button id="submit-add-to-do" class="submit-button">submit</button>
+        </section>
+        <section id="section-in-progress" class="task-section">
+            <h2 class="section-title">In progress</h2>
+            <ul class="in-progress-tasks"></ul>
+            <input id="add-in-progress-tasks" class="input" placeholder="Add in progress">  
+            <button id="submit-add-in-progress" class="submit-button">submit</button>
+        </section>
+        <section id="section-done" class="task-section">
+            <h2 class="section-title">Done</h2>
+            <ul class="done-tasks"></ul>
+            <input id="add-done-tasks" class="input" placeholder="Add done">  
+            <button id="submit-add-done" class="submit-button">submit</button>
+        </section>
+    </div>
 </body>
 </html>
