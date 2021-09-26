@@ -3,7 +3,7 @@ function createTaskElement(taskInput){
     let newTask = document.createElement("li")
     newTask.classList.add("task")
     newTask.innerText = taskInput
-    newTask.addEventListener("dblclick",edit)
+    //newTask.addEventListener("dblclick",edit)
     return newTask
 }
 
@@ -58,6 +58,24 @@ function localStorageTasksToDom(){
     }
 }
 
+
+//Search for tasks according to the value of the search input
+const searchInput = document.getElementById('search')
+//A function is triggered when the user releases a key in the input field.
+searchInput.onkeyup = function searchFilter () {
+    let filter = searchInput.value.toLowerCase().split()
+    let liElements = document.getElementsByTagName('li')
+    for (var i = 0; i < liElements.length; i++) {
+        var li = liElements[i].innerHTML;        
+        if (li.toLowerCase().includes(filter)) {
+            liElements[i].style.display = 'list-item' //Element is rendered as a list
+        }
+        else{
+            liElements[i].style.display = 'none' //Element will not be displayed
+        }
+    }
+}
+
 //Event handlers for adding buttons
 document.getElementById("submit-add-to-do").addEventListener("click", addButtonClick)
 document.getElementById("submit-add-in-progress").addEventListener("click", addButtonClick)
@@ -65,6 +83,5 @@ document.getElementById("submit-add-done").addEventListener("click", addButtonCl
 
 
 //On load functions
-
 buildLocalStorage()
 localStorageTasksToDom()
