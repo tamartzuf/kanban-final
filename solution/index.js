@@ -3,7 +3,7 @@ function createTaskElement(taskInput){
     let newTask = document.createElement("li")
     newTask.classList.add("task")
     newTask.innerText = taskInput
-   // newTask.addEventListener("mouseover", handleMouseOver)
+    newTask.addEventListener("mouseover", handleMouseOver)
     newTask.addEventListener("dblclick",editTask)
     return newTask
 }
@@ -122,6 +122,34 @@ function editTask() {
     
 }
 
+function handleMouseOver(event){
+    document.addEventListener("keyup",handleKeyUp)
+    function handleKeyUp(e){
+        const key = Number(e.key)
+        if(e.altKey){
+            if(key===1){
+                removeFromLocalStorage(event.target.innerText,event.target.closest('section').id)  
+                saveToLocalStorage(event.target.innerText,"todo")
+                document.querySelector(".to-do-tasks").prepend(event.target)
+            }
+            else if(key===2){
+                removeFromLocalStorage(event.target.innerText,event.target.closest('section').id)  
+                saveToLocalStorage(event.target.innerText,"in-progress")
+                document.querySelector(".in-progress-tasks").prepend(event.target) 
+            }
+            else if(key===3){
+                removeFromLocalStorage(event.target.innerText,event.target.closest('section').id)  
+                saveToLocalStorage(event.target.innerText,"done")
+                document.querySelector(".done-tasks").prepend(event.target)
+            }
+        }
+    }
+    document.addEventListener("mouseout",handleMouseOut)
+        function handleMouseOut(){
+            document.removeEventListener('mouseout', handleMouseOut);
+            document.removeEventListener('keyup', handleKeyUp);
+        }
+}
 
 
 //Event handlers for adding buttons
