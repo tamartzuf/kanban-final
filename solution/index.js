@@ -3,7 +3,8 @@ function createTaskElement(taskInput){
     let newTask = document.createElement("li")
     newTask.classList.add("task")
     newTask.innerText = taskInput
-    //newTask.addEventListener("dblclick",edit)
+   // newTask.addEventListener("mouseover", handleMouseOver)
+    newTask.addEventListener("dblclick",editTask)
     return newTask
 }
 
@@ -14,8 +15,9 @@ function addButtonClick(){
         const sectionCategory = event.currentTarget.parentNode.id
         const list = this.parentNode.querySelector("ul")
         const task = createTaskElement(taskInput)
-        list.appendChild(task)
+        list.prepend(task)
         saveToLocalStorage(taskInput, sectionCategory)
+        this.parentElement.querySelector("input").value = ""
     }
     else{
         alert("You can't add an empty task")
@@ -41,23 +43,31 @@ function saveToLocalStorage(taskInput, category) {
     //Match for the appropriate category
     const appropriateTasksList = myLocalStorage[category]
 
-    appropriateTasksList.push(taskInput)
+    appropriateTasksList.unshift(taskInput)
     myLocalStorage[category] = appropriateTasksList
     localStorage.setItem("tasks", JSON.stringify(myLocalStorage)) //adds the new task to the local storage 
-    console.log(localStorage)
+}
+
+//Removes the task from the previous category from the local storage
+function removeFromLocalStorage(taskInput, category) {
+    const myLocalStorage = JSON.parse(localStorage.getItem("tasks"))
+    const appropriateTasksList = myLocalStorage[category]
+    appropriateTasksList.splice(appropriateTasksList.indexOf(taskInput),1)
+    myLocalStorage[category] = appropriateTasksList
+    localStorage.setItem("tasks", JSON.stringify(myLocalStorage))
+    
 }
 
 //Build task elements from tasks saved to LocalStorage
 function localStorageTasksToDom(){
     const tasks = JSON.parse(localStorage.getItem("tasks"))
-    for(let [category, tasksList] of Object.entries(tasks)){
+    for(let [category, tasksList] of Object.entries(tasks)){ //returns an array of a given object's own enumerable string-keyed property
         let categoryElement = document.querySelector(`#${category}`).querySelector("ul")
         for (let task of tasksList){
             categoryElement.appendChild(createTaskElement(task))
         }       
     }
 }
-
 
 //Search for tasks according to the value of the search input
 const searchInput = document.getElementById('search')
@@ -75,6 +85,44 @@ searchInput.onkeyup = function searchFilter () {
         }
     }
 }
+
+//Return the position in LocalStorage of a given task
+function IndexInLocalStorage(task, category){
+    const myLocalStorage = JSON.parse(localStorage.getItem("tasks"))
+    const taskIndex= myLocalStorage[category].indexOf(task)
+    return taskIndex   
+}
+
+//changes the task input
+function changeLocalStorage(newTask, category, taskIndex){
+    const myLocalStorage = JSON.parse(localStorage.getItem("tasks"))
+    const appropriateTasksList = myLocalStorage[category]
+    appropriateTasksList.splice(taskIndex,1, newTask)
+    
+    myLocalStorage[category] = appropriateTasksList
+    localStorage.setItem("tasks", JSON.stringify(myLocalStorage))
+}
+
+//Let a task be editable and replaces the existing text
+function editTask() {
+    this.contentEditable = true
+    const category = this.parentElement.parentElement.id
+    const currentIndex = IndexInLocalStorage(this.innerText, category)
+    this.addEventListener("blur",() =>{
+        //if edit empty removes li from local storage
+        if (this.innerText == "") {
+            alert("You can't insert empty input" )
+        }
+        else{
+            changeLocalStorage(this.innerText, category, currentIndex)
+            this.contentEditable = false
+            console.log(localStorage)
+        }
+    })
+    
+}
+
+
 
 //Event handlers for adding buttons
 document.getElementById("submit-add-to-do").addEventListener("click", addButtonClick)
