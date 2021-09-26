@@ -122,6 +122,7 @@ function editTask() {
     
 }
 
+//handle mouse over and move tasks by alt and numbers
 function handleMouseOver(event){
     document.addEventListener("keyup",handleKeyUp)
     function handleKeyUp(e){
