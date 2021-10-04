@@ -12,4 +12,7 @@ All required functionalities were added:
 3. You can double click to edit tasks .
 4. Using the search input you can search through all your tasks.
 
+My web page:
+https://tamartzuf.github.io/kanban-final/solution/
+
 hope you will enjoy
