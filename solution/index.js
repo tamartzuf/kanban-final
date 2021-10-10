@@ -1,12 +1,4 @@
-//create task element with user input
-function createTaskElement(taskInput){
-    let newTask = document.createElement("li")
-    newTask.classList.add("task")
-    newTask.innerText = taskInput
-    newTask.addEventListener("mouseover", handleMouseOver)
-    newTask.addEventListener("dblclick",editTask)
-    return newTask
-}
+//directors
 
 //add new task to the relevant section
 function addButtonClick(){
@@ -24,6 +16,43 @@ function addButtonClick(){
     }
 }
 
+//Removes the task from the previous category from the local storage
+function removeFromLocalStorage(taskInput, category) {
+    const myLocalStorage =  getLocalStorage()
+    const appropriateTasksList = myLocalStorage[category]
+    appropriateTasksList.splice(appropriateTasksList.indexOf(taskInput),1)
+    myLocalStorage[category] = appropriateTasksList
+    localStorage.setItem("tasks", JSON.stringify(myLocalStorage))
+    
+}
+
+
+//services
+//dom
+
+//create task element with user input
+function createTaskElement(taskInput){
+    let newTask = document.createElement("li")
+    newTask.classList.add("task")
+    newTask.innerText = taskInput
+    newTask.addEventListener("mouseover", handleMouseOver)
+    newTask.addEventListener("dblclick",editTask)
+    return newTask
+}
+
+
+//Build task elements from tasks saved to LocalStorage
+function localStorageTasksToDom(){
+    const tasks = JSON.parse(localStorage.getItem("tasks"))
+    for(let [category, tasksList] of Object.entries(tasks)){ //returns an array of a given object's own enumerable string-keyed property
+        let categoryElement = document.querySelector(`#${category}`).querySelector("ul")
+        for (let task of tasksList){
+            categoryElement.appendChild(createTaskElement(task))
+        }       
+    }
+}
+
+//storage
 //Builds an empty object of tasks to LocalStorage
 function buildLocalStorage(){
     if(!localStorage.getItem("tasks")){
@@ -36,37 +65,20 @@ function buildLocalStorage(){
     }
 }
 
+//tasks
+function getLocalStorage(){
+    return JSON.parse(localStorage.getItem("tasks"))
+}
+
 //Saves tasks from DOM to LocalStorage
 function saveToLocalStorage(taskInput, category) {
-    const myLocalStorage = JSON.parse(localStorage.getItem("tasks"))
+    const myLocalStorage = getLocalStorage()
 
     //Match for the appropriate category
     const appropriateTasksList = myLocalStorage[category]
-
     appropriateTasksList.unshift(taskInput)
     myLocalStorage[category] = appropriateTasksList
     localStorage.setItem("tasks", JSON.stringify(myLocalStorage)) //adds the new task to the local storage 
-}
-
-//Removes the task from the previous category from the local storage
-function removeFromLocalStorage(taskInput, category) {
-    const myLocalStorage = JSON.parse(localStorage.getItem("tasks"))
-    const appropriateTasksList = myLocalStorage[category]
-    appropriateTasksList.splice(appropriateTasksList.indexOf(taskInput),1)
-    myLocalStorage[category] = appropriateTasksList
-    localStorage.setItem("tasks", JSON.stringify(myLocalStorage))
-    
-}
-
-//Build task elements from tasks saved to LocalStorage
-function localStorageTasksToDom(){
-    const tasks = JSON.parse(localStorage.getItem("tasks"))
-    for(let [category, tasksList] of Object.entries(tasks)){ //returns an array of a given object's own enumerable string-keyed property
-        let categoryElement = document.querySelector(`#${category}`).querySelector("ul")
-        for (let task of tasksList){
-            categoryElement.appendChild(createTaskElement(task))
-        }       
-    }
 }
 
 //Search for tasks according to the value of the search input
@@ -88,14 +100,14 @@ searchInput.onkeyup = function searchFilter () {
 
 //Return the position in LocalStorage of a given task
 function IndexInLocalStorage(task, category){
-    const myLocalStorage = JSON.parse(localStorage.getItem("tasks"))
+    const myLocalStorage = getLocalStorage()
     const taskIndex= myLocalStorage[category].indexOf(task)
     return taskIndex   
 }
 
 //changes the task input
 function changeLocalStorage(newTask, category, taskIndex){
-    const myLocalStorage = JSON.parse(localStorage.getItem("tasks"))
+    const myLocalStorage =  getLocalStorage()
     const appropriateTasksList = myLocalStorage[category]
     appropriateTasksList.splice(taskIndex,1, newTask)
     
@@ -128,20 +140,20 @@ function handleMouseOver(event){
     function handleKeyUp(e){
         const key = Number(e.key)
         if(e.altKey){
-            if(key===1){
-                removeFromLocalStorage(event.target.innerText,event.target.closest('section').id)  
-                saveToLocalStorage(event.target.innerText,"todo")
-                document.querySelector(".to-do-tasks").prepend(event.target)
-            }
-            else if(key===2){
-                removeFromLocalStorage(event.target.innerText,event.target.closest('section').id)  
-                saveToLocalStorage(event.target.innerText,"in-progress")
-                document.querySelector(".in-progress-tasks").prepend(event.target) 
-            }
-            else if(key===3){
-                removeFromLocalStorage(event.target.innerText,event.target.closest('section').id)  
-                saveToLocalStorage(event.target.innerText,"done")
-                document.querySelector(".done-tasks").prepend(event.target)
+            removeFromLocalStorage(event.target.innerText,event.target.closest('section').id)
+            switch(key){
+                case 1:
+                    saveToLocalStorage(event.target.innerText,"todo")
+                    document.querySelector(".to-do-tasks").prepend(event.target)
+                    break;
+                case 2:
+                    saveToLocalStorage(event.target.innerText,"in-progress")
+                    document.querySelector(".in-progress-tasks").prepend(event.target) 
+                    break;
+                case 3:
+                    saveToLocalStorage(event.target.innerText,"done")
+                    document.querySelector(".done-tasks").prepend(event.target)
+                    break;  
             }
         }
     }
